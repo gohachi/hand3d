@@ -19,7 +19,9 @@ from __future__ import print_function, unicode_literals
 
 import tensorflow as tf
 import numpy as np
-import scipy.misc
+#from scipy.misc import imresize
+from imageio import imread
+from PIL import Image
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -29,11 +31,11 @@ from utils.general import detect_keypoints, trafo_coords, plot_hand, plot_hand_3
 if __name__ == '__main__':
     # images to be shown
     image_list = list()
-    image_list.append('./data/img.png')
-    image_list.append('./data/img2.png')
-    image_list.append('./data/img3.png')
-    image_list.append('./data/img4.png')
-    image_list.append('./data/img5.png')
+    image_list.append('./data/1.jpg')
+    image_list.append('./data/2.jpg')
+    image_list.append('./data/3.jpg')
+    image_list.append('./data/4.jpg')
+    image_list.append('./data/5.jpg')
 
     # network input
     image_tf = tf.placeholder(tf.float32, shape=(1, 240, 320, 3))
@@ -53,9 +55,9 @@ if __name__ == '__main__':
     net.init(sess)
 
     # Feed image list through network
-    for img_name in image_list:
-        image_raw = scipy.misc.imread(img_name)
-        image_raw = scipy.misc.imresize(image_raw, (240, 320))
+    for i,img_name in enumerate(image_list):
+        image_raw = imread(img_name)#scipy.misc.imread(img_name)
+        image_raw = np.array(Image.fromarray(image_raw).resize((320,240)))#scipy.misc.imresize(image_raw, (240, 320))
         image_v = np.expand_dims((image_raw.astype('float') / 255.0) - 0.5, 0)
 
         hand_scoremap_v, image_crop_v, scale_v, center_v,\
@@ -89,4 +91,5 @@ if __name__ == '__main__':
         ax4.set_xlim([-3, 3])
         ax4.set_ylim([-3, 1])
         ax4.set_zlim([-3, 3])
+        plt.savefig("./results/" + str(i) + ".jpg")
         plt.show()
